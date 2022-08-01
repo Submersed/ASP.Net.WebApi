@@ -17,4 +17,8 @@ using si.ineor.webapi.Models;
         public DbSet<si.ineor.webapi.Models.Movie>? Movie { get; set; }
 
         public DbSet<si.ineor.webapi.Models.Rental>? Rental { get; set; }
-    }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+        }
+}

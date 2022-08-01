@@ -12,7 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 //Using InMemory Caching
-builder.Services.AddDbContext<ineorwebapiContext>(options => options.UseInMemoryDatabase("ineorwebapiDB"));
+builder.Services.AddDbContext<ineorwebapiContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ineorwebapiContext")));
 
 var app = builder.Build();
 

@@ -22,7 +22,7 @@ namespace si.ineor.webapi.Controllers
 
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<User>>> GetUser()
         {
           if (_context.User == null)
           {
