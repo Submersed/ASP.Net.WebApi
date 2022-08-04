@@ -5,119 +5,90 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using si.ineor.webapi.Models;
+using si.ineor.webapi.Authorization;
+using si.ineor.webapi.Entities;
+using si.ineor.webapi.Models.Movie;
+using si.ineor.webapi.Services;
 
 namespace si.ineor.webapi.Controllers
 {
+    [Authorize]
+
     [Route("api/[controller]")]
     [ApiController]
     public class MoviesController : ControllerBase
     {
-        private readonly ineorwebapiContext _context;
+        private IMovieService _movieService;
 
-        public MoviesController(ineorwebapiContext context)
+        public MoviesController(IMovieService movieService)
         {
-            _context = context;
+            _movieService = movieService;
         }
 
         // GET: api/Movies
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Movie>>> GetMovie()
+        [HttpGet("[action]")]
+        public ActionResult<IEnumerable<Movie>> SearchAllMovies(string? SearchText = "")
         {
-          if (_context.Movie == null)
-          {
-              return NotFound();
-          }
-            return await _context.Movie.ToListAsync();
+            return _movieService.GetAll(SearchText).ToList();
         }
 
         // GET: api/Movies/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> GetMovie(int id)
+        [HttpGet("{id:guid}")]
+        public ActionResult<Movie> GetMovie(Guid id)
         {
-          if (_context.Movie == null)
-          {
-              return NotFound();
-          }
-            var movie = await _context.Movie.FindAsync(id);
+            var movie = _movieService.GetById(id);
 
             if (movie == null)
             {
                 return NotFound();
             }
 
-            return movie;
+            return Ok(movie);
         }
 
         // PUT: api/Movies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Role.Admin)]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovie(int id, Movie movie)
+        public async Task<IActionResult> PutMovie(Guid id, Movie movie)
         {
-            if (id != movie.Id)
+            var s = _movieService.UpdateMovie(id, movie);
+            if(s != null)
             {
-                return BadRequest();
+                return Ok(s);
             }
-
-            _context.Entry(movie).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MovieExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Problem("Entity set 'IneorwebapiContext.Movie'!");
         }
 
         // POST: api/Movies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Role.Admin)]
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-          if (_context.Movie == null)
-          {
-              return Problem("Entity set 'ineorwebapiContext.Movie'  is null.");
-          }
-            _context.Movie.Add(movie);
-            await _context.SaveChangesAsync();
+            //if (_context.Movie == null)
+            //{
+            //    return Problem("Entity set 'IneorwebapiContext.Movie'  is null.");
+            //}
+            var s = _movieService.AddMovie(movie);
 
-            return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
+            return CreatedAtAction("AddedMovie", s);
         }
 
         // DELETE: api/Movies/5
+        [Authorize(Role.Admin)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMovie(int id)
+        public IActionResult DeleteMovie(Guid id)
         {
-            if (_context.Movie == null)
-            {
-                return NotFound();
-            }
-            var movie = await _context.Movie.FindAsync(id);
+
+            var movie = _movieService.GetById(id);
             if (movie == null)
             {
                 return NotFound();
             }
+            _movieService.DeleteMovie(movie);
 
-            _context.Movie.Remove(movie);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MovieExists(int id)
-        {
-            return (_context.Movie?.Any(e => e.Id == id)).GetValueOrDefault();
+            return Ok();
         }
     }
 }

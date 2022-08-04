@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace si.ineor.webapi.Migrations
 {
-    [DbContext(typeof(ineorwebapiContext))]
-    [Migration("20220801210026_Initial")]
-    partial class Initial
+    [DbContext(typeof(IneorwebapiContext))]
+    [Migration("20220804171219_MigrationsI")]
+    partial class MigrationsI
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,17 +23,18 @@ namespace si.ineor.webapi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("si.ineor.webapi.Models.Movie", b =>
+            modelBuilder.Entity("si.ineor.webapi.Entities.Movie", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReleaseDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -44,16 +45,20 @@ namespace si.ineor.webapi.Migrations
                     b.ToTable("Movie");
                 });
 
-            modelBuilder.Entity("si.ineor.webapi.Models.Rental", b =>
+            modelBuilder.Entity("si.ineor.webapi.Entities.Rental", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<Guid>("MovieId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("Rented")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Returned")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -67,7 +72,7 @@ namespace si.ineor.webapi.Migrations
                     b.ToTable("Rental");
                 });
 
-            modelBuilder.Entity("si.ineor.webapi.Models.User", b =>
+            modelBuilder.Entity("si.ineor.webapi.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,20 +90,31 @@ namespace si.ineor.webapi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("si.ineor.webapi.Models.Rental", b =>
+            modelBuilder.Entity("si.ineor.webapi.Entities.Rental", b =>
                 {
-                    b.HasOne("si.ineor.webapi.Models.Movie", "Movie")
+                    b.HasOne("si.ineor.webapi.Entities.Movie", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("si.ineor.webapi.Models.User", "User")
+                    b.HasOne("si.ineor.webapi.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
