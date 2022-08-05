@@ -18,15 +18,16 @@ namespace si.ineor.webapi.Entities
         //validacija...
         public DateTime ReleaseDate { get; set; }
 
-        public Movie(CreateRequest movie)
+        public Movie(string title,string description,DateTime releasedata)
         {
-            Title = movie.Title;
-            Description = movie.Description;
-            ReleaseDate = movie.ReleaseDate;
+            Id = Guid.NewGuid();
+            Title = title;
+            Description = description;
+            ReleaseDate = releasedata;
         }
         public Movie()
         {
-
+            this.Id = Guid.NewGuid();
         }
     }
 }

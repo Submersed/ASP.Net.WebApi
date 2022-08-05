@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using si.ineor.webapi.Authorization;
 using si.ineor.webapi.Entities;
 
 namespace si.ineor.webapi.Controllers
@@ -21,6 +22,7 @@ namespace si.ineor.webapi.Controllers
         }
 
         // GET: api/Rentals
+        [Authorize(Role.Admin)]
         [HttpGet("[action]")]
         public async Task<ActionResult<IEnumerable<Rental>>> GetAllRentals()
         {

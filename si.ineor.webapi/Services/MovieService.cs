@@ -25,10 +25,21 @@ namespace si.ineor.webapi.Services
         public Movie AddMovie(Movie movie)
         {
 
-           var saved = _context.Movie.Add(movie);
-            _context.SaveChanges();
+            try
+            {
+                movie.Id = Guid.NewGuid();
+                var saved = _context.Movie.Add(movie);
 
-            return saved.Entity;
+                _context.SaveChanges();
+
+                return saved.Entity;
+            }
+            catch (global::System.Exception)
+            {
+
+                throw;
+            }
+
         }
 
         public void DeleteMovie(Movie movie)

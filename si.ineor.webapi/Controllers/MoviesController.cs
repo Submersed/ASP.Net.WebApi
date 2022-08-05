@@ -13,9 +13,8 @@ using si.ineor.webapi.Services;
 namespace si.ineor.webapi.Controllers
 {
     [Authorize]
-
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class MoviesController : ControllerBase
     {
         private IMovieService _movieService;
@@ -49,8 +48,8 @@ namespace si.ineor.webapi.Controllers
         // PUT: api/Movies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Role.Admin)]
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMovie(Guid id, Movie movie)
+        [HttpPut("[action]")]
+        public async Task<IActionResult> UpdateMovie(Guid id, Movie movie)
         {
             var s = _movieService.UpdateMovie(id, movie);
             if(s != null)
@@ -62,9 +61,9 @@ namespace si.ineor.webapi.Controllers
 
         // POST: api/Movies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Role.Admin)]
-        [HttpPost]
-        public async Task<ActionResult<Movie>> PostMovie(Movie movie)
+        //[Authorize(Role.Admin)]
+        [HttpPost("[action]")]
+        public async Task<ActionResult<Movie>> AddMovie(Movie movie)
         {
             //if (_context.Movie == null)
             //{
@@ -72,12 +71,12 @@ namespace si.ineor.webapi.Controllers
             //}
             var s = _movieService.AddMovie(movie);
 
-            return CreatedAtAction("AddedMovie", s);
+            return Ok(s);
         }
 
         // DELETE: api/Movies/5
         [Authorize(Role.Admin)]
-        [HttpDelete("{id}")]
+        [HttpDelete("[action]/{id:guid}")]
         public IActionResult DeleteMovie(Guid id)
         {
 
