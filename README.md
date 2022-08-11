@@ -10,3 +10,10 @@ Change IP Address from 192.168.0.40 to your Local IP address<br />
 <br />
 "applicationUrl": "http://{your Local IP address}:22299"<br />
 "applicationUrl": "https://{your Local IP address}:7098;http://{your Local IP address}:5098"<br />
+
+type in Package Manager Console:
+If Migrations not exist or create new<br/>
+Add-Migration "UrMIgrationName"
+
+Then update local database
+Update-Database
